@@ -55,16 +55,13 @@ int main(int argc, char *argv[]) {
     registerSum[22] = {1,3};
     registerSum[23] = {4,6};
 
-
-    bool mSeq1[10] = {true,true, true, true, true, true, true, true, true, true};
-    bool mSeq2[10] = {true,true, true, true, true, true, true, true, true, true};
     int mbSeq1 = 0b1111111111;
     int mbSeq2 = 0b1111111111;
 
     generator gen = *new generator();
 
-    std::cout << "calcNextmSeq1";
-    std::cout <<  gen.calcNextmSeq1(mbSeq1) << std::endl;
+    int result = gen.calcNextmSeq1(mbSeq1);
+    std::cout << "calcNextmSeq1 = " << std::bitset<10>(result) << std::endl;
 
     return 0;
 
