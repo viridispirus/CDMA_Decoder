@@ -14,6 +14,8 @@ public:
     void setRegisterSum();
 
     int calcNextmSeq2(int mbSeq2);
+
+    int calcNextChipSeqBit(int mbSeq1, int mbSeq2, int registerSum1, int registerSum2);
 };
 
 

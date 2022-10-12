@@ -58,21 +58,19 @@ int main(int argc, char *argv[]) {
 
     int mbSeq1 = 0b1111111111;
     int mbSeq2 = 0b1111111111;
+    int nextChip;
 
     generator gen = *new generator();
 
-    std::cout << "calcNextmSeq1 = " << std::bitset<10>(mbSeq1) << std::endl;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 10; i++) {
         mbSeq1 = gen.calcNextmSeq1(mbSeq1);
-        std::cout << "calcNextmSeq1 = " << std::bitset<10>(mbSeq1) << std::endl;
-    }
-
-    std::cout << "calcNextmSeq2 = " << std::bitset<10>(mbSeq2) << std::endl;
-    for (int i = 0; i < 5; i++) {
+    //    std::cout << "calcNextmSeq1 = " << std::bitset<10>(mbSeq1) << std::endl;
         mbSeq2 = gen.calcNextmSeq2(mbSeq2);
         std::cout << "calcNextmSeq2 = " << std::bitset<10>(mbSeq2) << std::endl;
+        nextChip = gen.calcNextChipSeqBit(mbSeq1, mbSeq2, registerSum[0].rSum1, registerSum[0].rSum2);
+     //   std::cout << "calcNextChip = " << std::bitset<10>(nextChip) << std::endl;
     }
-    return 0;
 
+    return 0;
 }
 
