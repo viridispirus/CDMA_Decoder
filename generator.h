@@ -10,6 +10,10 @@ class generator {
 public:
     int calcNextmSeq1(int);
 
+
+    void setRegisterSum();
+
+    int calcNextmSeq2(int mbSeq2);
 };
 
 
