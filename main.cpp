@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
     generator gen = *new generator();
     gen.initRegisterSum();
     while (satelliteId <= 24) {
+        //TODO: Pointer weitersetzen jej
         bool* goldSeq = gen.calcGoldSequence(satelliteId, mbSeq1, mbSeq2);
         satelliteId++;
     }
