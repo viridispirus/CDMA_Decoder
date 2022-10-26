@@ -8,14 +8,15 @@
 
 class generator {
 public:
-    int calcNextmSeq1(int);
+    int stepMotherSequence1(int);
 
 
-    void setRegisterSum();
+    void initRegisterSum();
 
-    int calcNextmSeq2(int mbSeq2);
+    int stepMotherSequence2(int mbSeq2);
+    bool calcNextChipSeqBit(int mbSeq1, int mbSeq2, int registerSum1, int registerSum2);
 
-    int calcNextChipSeqBit(int mbSeq1, int mbSeq2, int registerSum1, int registerSum2);
+    bool* calcGoldSequence(int satelliteId, int mbSeq1, int mbSeq2);
 };
 
 
