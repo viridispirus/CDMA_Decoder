@@ -17,6 +17,8 @@ public:
     bool calcNextChipSeqBit(int mbSeq1, int mbSeq2, int registerSum1, int registerSum2);
 
     bool* calcGoldSequence(int satelliteId, int mbSeq1, int mbSeq2);
+
+    int matchingGoldSeqWithSignal(bool *goldSeq, int *signal);
 };
 
 

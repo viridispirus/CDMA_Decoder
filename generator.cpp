@@ -91,15 +91,15 @@ bool generator::calcNextChipSeqBit(int mbSeq1, int mbSeq2, int registerSum1, int
     bool mbSeq1Bit = mbSeq1&1;
       //std::cout << "motherSequence1AfterStep ";
       //std::cout << mbSeq1Bit << std::endl;
-    std::cout << "rSum1Bit ";
-    std::cout << (mbSeq2>>(10-registerSum1)&1) << std::endl;
+    //std::cout << "rSum1Bit ";
+    //std::cout << (mbSeq2>>(10-registerSum1)&1) << std::endl;
     bool mbSeq2Bit = ((mbSeq2 >> ( 10 - registerSum1)) &1) ^ ((mbSeq2 >> ( 10 - registerSum2)) &1);
     //std::cout << "rSum2Bit ";
     //std::cout << (mbSeq2>>(10-registerSum2)&1) << std::endl;
     //std::cout << "motherSequence2AfterStep ";
     //std::cout << mbSeq2Bit << std::endl;
-    std::cout << "nextChipBit ";
-    std::cout << (mbSeq1Bit ^ mbSeq2Bit) << std::endl;
+    //std::cout << "nextChipBit ";
+    //std::cout << (mbSeq1Bit ^ mbSeq2Bit) << std::endl;
     return (mbSeq1Bit ^ mbSeq2Bit);
 }
 
@@ -121,4 +121,21 @@ bool generator::calcNextChipSeqBit(int mbSeq1, int mbSeq2, int registerSum1, int
 
     }
     return chipSeq;
+}
+
+    int generator::matchingGoldSeqWithSignal(bool* goldSeq, int signal[]) {
+
+        for (int delta = 0; delta < 1023; delta++) {
+            int result = 0;
+            for (int j = 0; j < 1023; j++) {
+                short vector = goldSeq[j] ? 1 : -1 ;
+                result += vector * signal[(delta + j) % 1023];
+            }
+            if (result < -500 || result > 500) {
+               // std::cout << "result = " << result << std::endl;
+                return result;
+            }
+        }
+
+    return 0;
 }

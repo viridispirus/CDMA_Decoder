@@ -32,15 +32,32 @@ int main(int argc, char *argv[]) {
    // std::cout << "stepMotherSequence1 = " << std::bitset<10>(mbSeq1) << std::endl;
    // std::cout << "stepMotherSequence2 = " << std::bitset<10>(mbSeq2) << std::endl;
 
-    int satelliteId = 1;
     generator gen = *new generator();
     gen.initRegisterSum();
-    while (satelliteId <= 24) {
-        //TODO: Pointer weitersetzen jej
-        bool* goldSeq = gen.calcGoldSequence(satelliteId, mbSeq1, mbSeq2);
-        satelliteId++;
-    }
+    int test[4] = {5,8,11,22};
+    for(int testid = 0; testid <= 3; testid++) {
+        bool* goldSeq = gen.calcGoldSequence(test[testid], mbSeq1, mbSeq2);
+       // std::cout << "satellitedID = " << test[testid] << std::endl;
+        int result = gen.matchingGoldSeqWithSignal(goldSeq, signal);
+        if (result != 0) {
+            std::cout << "Satellited = " << test[testid] << " has sent bit ";
+            if (result > 500) {
+                std::cout << "1";
+            }
+            if (result < -500) {
+                std::cout << "0";
+            }
+            std::cout << std::endl;
+        }
 
+    }
+    /**
+    for(int satelliteId = 1; satelliteId <= 24; satelliteId++) {
+        bool* goldSeq = gen.calcGoldSequence(satelliteId, mbSeq1, mbSeq2);
+        std::cout << "satellitedID = " << satelliteId << std::endl;
+        gen.matchingGoldSeqWithSignal(goldSeq, signal);
+    }
+    */
     return 0;
 }
 
