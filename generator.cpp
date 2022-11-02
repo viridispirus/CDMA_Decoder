@@ -123,16 +123,18 @@ bool generator::calcNextChipSeqBit(int mbSeq1, int mbSeq2, int registerSum1, int
     return chipSeq;
 }
 
-    int generator::matchingGoldSeqWithSignal(bool* goldSeq, int signal[]) {
+int generator::matchingGoldSeqWithSignal(bool* goldSeq, int signal[], int* delta) {
 
-        for (int delta = 0; delta < 1023; delta++) {
+        for (int currDelta = 0; currDelta < 1023; currDelta++) {
             int result = 0;
             for (int j = 0; j < 1023; j++) {
                 short vector = goldSeq[j] ? 1 : -1 ;
-                result += vector * signal[(delta + j) % 1023];
+                result += vector * signal[(currDelta + j) % 1023];
             }
             if (result < -500 || result > 500) {
-               // std::cout << "result = " << result << std::endl;
+                *delta = currDelta;
+                //std::cout << "result = " << result << std::endl;
+                //std::cout << "currDelta = " << currDelta << std::endl;
                 return result;
             }
         }

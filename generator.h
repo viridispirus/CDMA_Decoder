@@ -18,7 +18,7 @@ public:
 
     bool* calcGoldSequence(int satelliteId, int mbSeq1, int mbSeq2);
 
-    int matchingGoldSeqWithSignal(bool *goldSeq, int *signal);
+    int matchingGoldSeqWithSignal(bool *goldSeq, int *signal, int *delta);
 };
 
 
