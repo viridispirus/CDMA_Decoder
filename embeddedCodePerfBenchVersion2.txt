@@ -1,0 +1,164 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+struct rSum{
+    int rSum1;
+    int rSum2;
+};
+    rSum registerSum[24];
+
+void initRegisterSum() {
+    registerSum[0] = {2,6};
+    registerSum[1] = {3,7};
+    registerSum[2] = {4,8};
+    registerSum[3] = {5,9};
+    registerSum[4] = {1,9};
+    registerSum[5] = {2,10};
+    registerSum[6] = {1,8};
+    registerSum[7] = {2,9};
+    registerSum[8] = {3,10};
+    registerSum[9] = {2,3};
+    registerSum[10] = {3,4};
+    registerSum[11] = {5,6};
+    registerSum[12] = {6,7};
+    registerSum[13] = {7,8};
+    registerSum[14] = {8,9};
+    registerSum[15] = {9,10};
+    registerSum[16] = {1,4};
+    registerSum[17] = {2,5};
+    registerSum[18] = {3,6};
+    registerSum[19] = {4,7};
+    registerSum[20] = {5,8};
+    registerSum[21] = {6,9};
+    registerSum[22] = {1,3};
+    registerSum[23] = {4,6};
+}
+
+    /**
+     * Calculate next bit for the first motherSequence
+     * which is shifted into the sequence.
+     * @param mbSeq1
+     * @return
+     */
+int stepMotherSequence1(int mbSeq1) {
+    bool thirdBit = (mbSeq1>>7)&1;
+//    std::cout << "thirdBit ";
+//    std::cout << thirdBit << std::endl;
+        bool nextBit = !(mbSeq1&1) ^ !thirdBit;
+//    std::cout << "nextBit ";
+//    std::cout << nextBit << std::endl;
+    return (nextBit<<9) | (mbSeq1>>1);
+}
+
+/**
+ * Calculate next bit for the second motherSequence
+ * which is shifted into the sequence.
+ * @param mbSeq1
+ * @return
+ */
+int stepMotherSequence2(int mbSeq2) {
+    bool secondBit = (mbSeq2>>8)&1;
+    bool thirdBit = (mbSeq2>>7)&1;
+    bool sixthBit = (mbSeq2>>4)&1;
+    bool eighthBit = (mbSeq2>>2)&1;
+    bool ninthBit = (mbSeq2>>1)&1;
+    bool tenthBit = mbSeq2&1;
+    bool nextBit = secondBit ^ thirdBit ^ sixthBit ^ eighthBit ^ ninthBit ^ tenthBit;
+    return (nextBit<<9) | (mbSeq2>>1);
+}
+
+bool calcNextChipSeqBit(int mbSeq1, int mbSeq2, int registerSum1, int registerSum2) {
+    bool mbSeq1Bit = mbSeq1&1;
+    bool mbSeq2Bit = ((mbSeq2 >> ( 10 - registerSum1)) &1) ^ ((mbSeq2 >> ( 10 - registerSum2)) &1);
+    return (mbSeq1Bit ^ mbSeq2Bit);
+}
+
+
+
+int* calcGoldSequence(int satelliteId, int mbSeq1, int mbSeq2) {
+  PROFILE_START("calcGoldSequence");
+    int numberOfBits = 1023;
+    static bool chipSeq[1023];
+    static int chipSeqCastToInt[1023];
+    for (int i = 0; i < numberOfBits; i++) {
+        chipSeq[i] = calcNextChipSeqBit(
+                mbSeq1,
+                mbSeq2,
+                registerSum[satelliteId].rSum1,
+                registerSum[satelliteId].rSum2
+        );
+        chipSeqCastToInt[i] = chipSeq[i] ? 1 : -1;
+        mbSeq1 = stepMotherSequence1(mbSeq1);
+        mbSeq2 = stepMotherSequence2(mbSeq2);
+    }
+    PROFILE_STOP("calcGoldSequence");
+
+    return chipSeqCastToInt;
+}
+
+int matchingGoldSeqWithSignal(int* goldSeq, int signal[], int* delta) {
+  PROFILE_START("matchingGoldSeqWithSignal");
+        for (int currDelta = 0; currDelta < 1023; currDelta++) {
+            int result = 0;
+            for (int j = 0; j < 1023; j++) {
+                result += goldSeq[j] * signal[currDelta + j];
+            }
+            if (result < -500 || result > 500) {
+                *delta = currDelta;
+                return result;
+            }
+        }
+        PROFILE_STOP("matchingGoldSeqWithSignal");
+    return 0;
+}
+
+
+
+int main() {
+  PROFILE_START("all");
+    char input[] = "0 -2 -2 2 2 2 2 -2 0 2 4 0 4 0 -2 2 4 0 2 0 -2 2 2 0 -2 -2 -2 -2 0 0 4 -4 2 -2 0 2 0 0 0 2 2 0 -2 0 -2 -2 2 2 0 0 2 0 0 -2 2 2 0 0 -2 0 0 2 -2 2 0 -4 2 -2 0 0 0 -2 2 0 -2 2 0 4 0 -2 -2 -2 -2 0 0 -2 -2 0 0 -2 2 2 2 -4 0 0 0 0 -2 2 2 0 2 0 -2 2 -2 0 0 0 -2 -2 0 0 2 0 0 -4 4 -2 0 2 0 4 2 -4 2 2 -2 0 0 2 -2 0 4 0 -2 2 0 0 0 2 -2 -2 -4 2 2 2 4 0 -2 -2 0 -2 0 0 2 0 0 0 2 0 0 0 2 -2 -2 -2 0 -4 0 -2 -2 0 4 -4 2 -2 0 0 0 2 2 0 4 2 0 0 2 -2 0 0 0 -2 2 0 0 -4 2 -4 2 -2 0 -4 0 -2 0 0 0 2 2 0 -2 0 2 0 -2 2 2 -2 0 0 -2 0 2 2 -4 0 -2 2 0 2 -2 -2 0 -4 -2 0 0 0 2 -2 2 -2 -2 -2 0 2 0 -2 -2 -2 0 -2 0 0 -2 2 -2 0 2 0 -2 0 0 0 0 0 2 0 2 0 0 -2 2 2 -2 0 -2 0 2 2 0 -4 -4 -2 0 4 4 2 0 -2 2 0 2 2 -2 0 0 -2 0 2 -2 2 -2 -2 0 -2 0 0 -2 -2 0 0 -2 -2 -2 0 4 0 -2 -2 2 -2 2 -4 0 -2 0 -4 -2 -2 -2 -2 0 -2 0 0 0 2 -2 -2 0 2 0 0 -2 4 4 2 2 2 -2 -4 0 0 -2 0 -2 0 0 -2 4 2 -2 0 0 0 2 -2 2 2 0 -2 -2 -2 -4 2 0 2 2 0 -2 0 -4 -2 0 -2 0 4 2 2 2 0 -4 0 -2 0 -2 4 2 -2 0 0 -2 0 0 0 0 0 0 0 -2 -2 -4 0 4 0 0 -2 -2 0 -2 2 -2 -2 4 0 0 -2 2 0 2 0 0 4 2 0 0 0 4 0 0 2 4 0 0 -2 -2 0 0 2 0 -2 -2 4 2 -2 0 4 -2 0 0 2 0 0 -2 -2 0 0 2 0 4 0 2 2 2 0 2 0 0 4 4 -2 -2 2 -2 0 0 0 0 0 0 0 -2 0 -2 -2 -2 4 2 -4 -2 2 -4 -2 -2 4 -2 0 -2 4 4 0 0 0 2 0 4 0 2 0 -2 -2 0 2 0 -2 2 2 2 0 0 0 0 -4 -2 0 4 0 0 0 2 0 2 0 2 0 2 0 -4 0 -2 -2 0 0 2 -2 0 2 0 2 2 0 0 2 4 0 0 -2 -2 0 4 2 2 4 -2 2 0 -2 0 0 -4 4 2 2 -2 2 -2 0 -4 2 0 -2 -4 -2 -4 -2 0 2 2 0 4 -2 2 2 0 0 2 0 2 0 0 -4 2 4 4 2 -4 -2 -2 -2 -4 -2 -2 0 2 2 2 -2 2 2 0 -2 2 -2 0 -2 0 -2 0 0 2 2 2 2 2 -4 2 0 0 0 0 -4 -2 2 2 -2 4 0 4 -2 -2 0 -2 2 0 2 2 0 2 0 -2 -2 -2 -4 0 0 2 -4 0 0 0 0 -2 0 4 -2 4 0 0 2 0 4 -2 2 0 -2 -2 0 -4 -2 2 0 2 0 4 0 0 -2 0 4 4 2 2 2 0 0 0 2 0 -2 0 -4 -4 -2 2 -4 2 0 2 0 2 0 -2 0 0 -2 2 0 0 0 0 0 0 2 -2 -2 0 -4 2 -2 2 -2 -2 -2 -4 0 2 2 0 2 -4 2 -2 4 0 0 4 2 0 -2 0 2 0 2 2 4 2 2 0 0 -4 2 2 2 0 0 -2 0 2 2 -2 0 0 0 0 4 0 -2 2 -2 -2 0 0 -2 0 4 -2 -4 0 0 -2 0 0 0 0 4 0 -2 -2 2 2 0 2 2 0 -2 4 0 -2 2 0 0 -2 2 2 0 -2 0 -2 0 -4 -4 0 -2 2 2 0 -2 -2 0 -2 -4 0 -2 -2 0 -4 0 -2 -4 -2 -2 -2 -2 0 0 0 0 -2 -2 2 -2 2 0 0 0 -2 -2 0 2 4 2 2 0 -2 -2 -2 -4 -2 0 0 0 2 -2 0 0 -2 0 2 0 0 0 4 2 2 0 2 2 2 -2 -2 4 -2 -2 -2 0 2 -2 0 2 0 0 0 -2 2 2 0 2 2 0 -2 0 0 0 0 -2 -2 0 -2 0 0 -2 2 0 4 2 2 -4 0 0 0 -2 2 2 0 0 2 2 2 0 -2 0 -4 0 2 -2 0 0 0 2 0 4 -2 0 -2 0 -2 -2 0 0 2 2 2 2 2 2 2 -2 -2 -2 4 0 -2 4 -2 2 2 -2 -2 2 -2 2 -4 2 2 -2 0 -2 2 0 0 -2 2 2 2 0 -2 0 -2 -4 0";
+    int signal[2048];
+    int index = 0;
+    char* word = strtok(input, " ");
+
+    while(word != NULL) {
+      signal[index] = std::stoi(word);
+      signal[index+1024] = signal[index];
+      index++;
+      word = strtok(NULL, " ");
+    }
+
+    std::cout <<  word;
+
+    // Generate Mother sequences
+    int motherSequence1 = 0b1111111111;
+    int motherSequence2 = 0b1111111111;
+
+    initRegisterSum();
+    // Iterate through all Satellites
+    PROFILE_START("mainLoop");
+    for(int currentSatellite = 0; currentSatellite < 24; currentSatellite++) {
+        // Fetch Gold Code for current satellite
+        int* goldCode = calcGoldSequence(currentSatellite, motherSequence1, motherSequence2);
+
+        // Try to match Gold Code with input signal
+        int delta = 0;
+        int result = matchingGoldSeqWithSignal(goldCode, signal, &delta);
+
+        // Check result
+        if (result != 0) {
+            std::cout << "Satellite " << (currentSatellite + 1)  << " has sent bit ";
+            if (result > 0) {
+                std::cout << "1";
+            }
+            if (result < 0) {
+                std::cout << "0";
+            }
+            std::cout <<  " (delta = " << delta << ")" << std::endl;
+        }
+    }
+    PROFILE_STOP("mainLoop");
+    PROFILE_STOP("all");
+    return 0;
+}
